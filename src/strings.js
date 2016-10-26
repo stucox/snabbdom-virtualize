@@ -4,8 +4,6 @@ import { createTextVNode, transformName, unescapeEntities } from './utils';
 
 export default function(html, options = {}) {
 
-    const context = options.context || document;
-
     // If there's nothing here, return null;
     if (!html) {
         return null;
@@ -15,14 +13,14 @@ export default function(html, options = {}) {
     const createdVNodes = [];
 
     // Parse the string into the AST and convert to VNodes.
-    const vnodes = convertNodes(parse(html), createdVNodes, context);
+    const vnodes = convertNodes(parse(html), createdVNodes);
 
     let res;
     if (!vnodes) {
         // If there are no vnodes but there is string content, then the string
         // must be just text or at least invalid HTML that we should treat as
         // text (since the AST parser didn't find any well-formed HTML).
-        res = toVNode({ type: 'text', content: html }, createdVNodes, context);
+        res = toVNode({ type: 'text', content: html }, createdVNodes);
     }
     else if (vnodes.length === 1) {
         // If there's only one root node, just return it as opposed to an array.
@@ -38,28 +36,28 @@ export default function(html, options = {}) {
     return res;
 }
 
-function convertNodes(nodes, createdVNodes, context) {
+function convertNodes(nodes, createdVNodes) {
     if (nodes instanceof Array && nodes.length > 0) {
-        return nodes.map((node) => { return toVNode(node, createdVNodes, context); });
+        return nodes.map((node) => { return toVNode(node, createdVNodes); });
     }
     else {
         return undefined;
     }
 }
 
-function toVNode(node, createdVNodes, context) {
+function toVNode(node, createdVNodes) {
     let newNode;
     if (node.type === 'text') {
-        newNode = createTextVNode(node.content, context);
+        newNode = createTextVNode(node.content);
     }
     else {
-        newNode = h(node.name, buildVNodeData(node, context), convertNodes(node.children, createdVNodes, context));
+        newNode = h(node.name, buildVNodeData(node), convertNodes(node.children, createdVNodes));
     }
     createdVNodes.push(newNode);
     return newNode;
 }
 
-function buildVNodeData(node, context) {
+function buildVNodeData(node) {
     const data = {};
     if (!node.attrs) {
         return data;
@@ -67,7 +65,7 @@ function buildVNodeData(node, context) {
 
     const attrs = Object.keys(node.attrs).reduce((memo, name) => {
         if (name !== 'style' && name !== 'class') {
-            const val = unescapeEntities(node.attrs[name], context);
+            const val = unescapeEntities(node.attrs[name]);
             memo ? memo[name] = val : memo = { [name]: val };
         }
         return memo;

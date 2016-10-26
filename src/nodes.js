@@ -4,24 +4,23 @@ import listeners from './event-listeners';
 
 export default function virtualizeNodes(element, options = {}) {
 
-    const context = options.context || document;
-
     if (!element) {
         return null;
     }
 
     const createdVNodes = [];
-    const vnode = convertNode(element, createdVNodes, context);
+    const vnode = convertNode(element, createdVNodes);
     options.hooks && options.hooks.create && createdVNodes.forEach((node) => { options.hooks.create(node); });
     return vnode;
 }
 
+const TEXT_NODE_TYPE = 3;   // https://dom.spec.whatwg.org/#dom-node-text_node
 
-function convertNode(element, createdVNodes, context) {
+function convertNode(element, createdVNodes) {
     // If our node is a text node, then we only want to set the `text` part of
     // the VNode.
-    if (element.nodeType === context.defaultView.Node.TEXT_NODE) {
-        const newNode = createTextVNode(element.textContent, context);
+    if (element.nodeType === TEXT_NODE_TYPE) {
+        const newNode = createTextVNode(element.textContent);
         newNode.elm = element;
         createdVNodes.push(newNode);
         return newNode
@@ -72,7 +71,7 @@ function convertNode(element, createdVNodes, context) {
     if (children.length > 0) {
         childNodes = [];
         for (var i = 0; i < children.length; i++) {
-            childNodes.push(convertNode(children.item(i), createdVNodes, context));
+            childNodes.push(convertNode(children.item(i), createdVNodes));
         }
     }
     const newNode = h(element.tagName.toLowerCase(), data, childNodes);

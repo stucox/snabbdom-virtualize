@@ -46,6 +46,7 @@
     "snabbdom": "~0"
   },
   "dependencies": {
+    "html-entities": "1.2.0",
     "html-parse-stringify2": "^1.2.1"
   }
 }

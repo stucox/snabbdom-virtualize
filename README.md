@@ -7,7 +7,6 @@ Library for turning strings and DOM nodes into virtual DOM nodes compatible with
 ### `virtualize(nodes, options)`
 * `nodes: Element|String` - Either a DOM `Element` or a string of HTML to turn into a set of virtual DOM nodes.
 * `options: Object` - A hash of options to pass into the virtualize call. Available options are currently:
-  * `context: Document` - An alternative DOM document to use (default is `window.document`).
   * `hooks: Object` -  An object specifying hooks to call during the virtualization process. See the [hooks](#hooks) section below.
 
 ## Usage
@@ -43,18 +42,6 @@ let vnode = virtualize(topNode);
 
 // String
 let vnode = virtualize('<div>Click <a href="http://example.com">here</a></div>');
-```
-
-#### Specifying a different document
-
-You can specify a different DOM document (other than the default `window.document` in a browser) by passing a `context` option into your calls to `virtualize`. This will allow for usage in a server-side setting, where there is no browser. One option is to use `jsdom` to create a DOM document that can be used:
-
-```javascript
-const virtualize = require('snabbdom-virtualize').default;
-const jsdom = require('jsdom').jsdom;
-virtualizeString('<div>Click <a href="http://example.com">here</a></div>', {
-  context: jsdom('<html></html>')
-});
 ```
 
 #### Using modules à la carte

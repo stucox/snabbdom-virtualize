@@ -8,13 +8,11 @@ const extendVnode = require('./lib/helpers').extendVnode;
 const VNode = require('snabbdom/vnode');
 
 
-const opts = { context: (typeof document != 'undefined') ? document : jsdom('<html></html>') };
-
 describe("In a nodejs environment", () => {
     describe("virtualizeString", () => {
         it("should convert nodes with children", () => {
             expect(
-                virtualizeString("<ul><li>One</li><li>Fish</li><li>Two</li><li>Fish</li></ul>", opts)
+                virtualizeString("<ul><li>One</li><li>Fish</li><li>Two</li><li>Fish</li></ul>")
             ).to.deep.equal(
                 h('ul', [
                     h('li', ['One']),
@@ -26,7 +24,7 @@ describe("In a nodejs environment", () => {
         });
 
         it("should decode HTML entities, since VNodes just deal with text content", () => {
-            expect(virtualizeString("<div>&amp; is an ampersand! and &frac12; is 1/2!</div>", opts)).to.deep.equal(
+            expect(virtualizeString("<div>&amp; is an ampersand! and &frac12; is 1/2!</div>")).to.deep.equal(
                 h('div', [ '& is an ampersand! and ½ is 1/2!' ])
             );
         });
@@ -41,7 +39,7 @@ describe("In a nodejs environment", () => {
         it("should convert nodes with children", () => {
             const ul = doc.createElement('ul');
             ul.innerHTML = "<li>One</li><li>Fish</li><li>Two</li><li>Fish</li>";
-            expect(virtualizeNodes(ul, opts)).to.deep.equal(
+            expect(virtualizeNodes(ul)).to.deep.equal(
                 extendVnode(h('ul', [
                     extendVnode(h('li', [ extendVnode(VNode(undefined, undefined, undefined, 'One'), ul.childNodes[0].firstChild) ]), ul.childNodes[0]),
                     extendVnode(h('li', [ extendVnode(VNode(undefined, undefined, undefined, 'Fish'), ul.childNodes[1].firstChild) ]), ul.childNodes[1]),
@@ -54,7 +52,7 @@ describe("In a nodejs environment", () => {
         it("should decode HTML entities, since VNodes just deal with text content", () => {
             const div = doc.createElement('div');
             div.innerHTML = "&amp; is an ampersand! and &frac12; is 1/2!";
-            expect(virtualizeNodes(div, opts)).to.deep.equal(
+            expect(virtualizeNodes(div)).to.deep.equal(
                 extendVnode(h('div', [ extendVnode(VNode(undefined, undefined, undefined,'& is an ampersand! and ½ is 1/2!'), div.firstChild) ]), div)
             );
         });
